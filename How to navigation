@@ -1,0 +1,24 @@
+Navigation made easy and fun!
+
+first, rosmake gmapping.
+
+CREATE YOUR OWN MAP!
+1. launch the robot.
+	the robot has to publish a laser scan to a topic
+2. run the following node: rosrun gmapping slam_gmapping scan:=<scan topic. armadillo default: scan>  
+3. move the robot around. 
+	avoid crashing into things as it messes with the odometry!
+4. to save the map, run in a differetn terminal: 
+	rosrun map_server map_saver -f <map_name>
+
+TO LOAD THE MAP:
+rosrun map_server map_server YOURMAP.yaml
+
+TO NAVIGATE:
+1. launch the robot:
+	roslaunch robotican_armadillo armadillo.launch lidar:=true move_base:=true amcl:=true gazebo:=true have_map_file:=true world_name:="`rospack find robotican_common`/worlds/building_with_elevator.world"
+2. load the map: 
+	rosrun map_server map_server YOURMAP.yaml
+3. to navigate manually: open rviz, load the map. on the top toolbar: manipulate -> navigate 2d -> click & drag on the map
+4. to navigate via code: send a message to movebase?
+
