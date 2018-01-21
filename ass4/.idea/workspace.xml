@@ -14,12 +14,22 @@
       <file leaf-file-name="controller.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="35" lean-forward="false" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
+            <state relative-caret-position="360">
+              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
               <folding>
                 <element signature="e#23#35#0" expanded="true" />
                 <marker date="1516554191849" expanded="true" signature="732:734" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="red_detector.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/red_detector.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="9" column="1" lean-forward="false" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -54,6 +64,7 @@
         <option value="$PROJECT_DIR$/scripts/Movement.py" />
         <option value="$PROJECT_DIR$/scripts/movement.py" />
         <option value="$PROJECT_DIR$/scripts/controller.py" />
+        <option value="$PROJECT_DIR$/scripts/red_detector.py" />
       </list>
     </option>
   </component>
