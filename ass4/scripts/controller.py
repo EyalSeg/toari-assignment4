@@ -3,49 +3,41 @@
 import rospy
 import actionlib
 
-from move_base_msgs.msg import MoveBaseGoal, MoveBaseAction
-from geometry_msgs.msg import Pose, Quaternion, Point, PoseStamped
-from std_msgs.msg import Header
+from move_base_msgs.msg import MoveBaseAction
+
+from movement import Movement
 
 class Controller:
     def __init__(self):
-
         rospy.init_node('talker', anonymous=True)
 
-        self.navigation = actionlib.SimpleActionClient("move_base", MoveBaseAction)
-        self.navigation.wait_for_server()
+        navigation = actionlib.SimpleActionClient("move_base", MoveBaseAction)
+        navigation.wait_for_server()
+
+        self.movement = Movement(navigation, "/map")
+        self.move = self.movement.move
+
         print("I'm up")
 
+        # rospy.spin()
 
-        #rospy.spin()
-
-    def finished_moving(self, state, result):
+    def finished_moving(self):
         print "finished moving"
 
         rospy.signal_shutdown(0)
-
-    def move(self, x, y, z = 0):
-        print "moving!"
-
-        header = Header()
-        header.frame_id = "/map"
-
-        pose = Pose()
-        pose.position = Point(x, y, z)
-        pose.orientation = Quaternion(0, 0, 1, 0.3)
-
-        stamped = PoseStamped(header=header, pose=pose)
-
-        goal = MoveBaseGoal()
-        goal.target_pose = stamped
-
-        self.navigation.send_goal(goal, done_cb=self.finished_moving)
-
-        rospy.spin()
+        return True
 
 if __name__ == '__main__':
     try:
         controller = Controller()
-        controller.move(-8, -3)
+
+        #an aync navigation example. PROMISES ARE KEWL
+        # controller.move([0.9, -1.8], [0, 0, -0.7, 0.7])\
+        #     .then(lambda result: controller.move([-2.6, -3.2], [0, 0, 1, 0.01]))\
+        #     .then(lambda result: controller.move([-8.7, -1.5], [0, 0, 0.3, 0.9]))\
+        #     .then(lambda result: controller.move([-8.7, 3], [0, 0, -1, 0.01]))\
+        #     .then(lambda result: controller.finished_moving())
+
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass
