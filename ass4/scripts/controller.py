@@ -9,7 +9,7 @@ from movement import Movement
 
 class Controller:
     def __init__(self):
-        rospy.init_node('talker', anonymous=True)
+        rospy.init_node('controller', anonymous=True)
 
         navigation = actionlib.SimpleActionClient("move_base", MoveBaseAction)
         navigation.wait_for_server()
