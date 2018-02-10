@@ -47,7 +47,12 @@ class RedDetector:
             self.object_view_publisher.publish(self.cv_bridge.cv2_to_imgmsg(bgr, encoding="bgr8"))
             return
 
-        center = CvHelper.find_contour_center(contour)
+        try:
+            center = CvHelper.find_contour_center(contour)
+        except Exception:
+            # TODO: fix the excpetion! See more details inside the function
+            # swallowed the exception so the node will not crash.
+            return
 
         cv2.circle(bgr, (center[0], center[1]), 30 ,(0, 255, 0), 5,  -1)
         self.object_view_publisher.publish(self.cv_bridge.cv2_to_imgmsg(bgr, encoding="bgr8"))
