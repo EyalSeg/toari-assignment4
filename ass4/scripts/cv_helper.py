@@ -79,6 +79,7 @@ class CvHelper:
 
     @staticmethod
     def find_contour_center(contour):
+        # IMPORTANT! sometimes the moments are 0 which will result in a DivideByZeroException!
         M = cv2.moments(contour)
         x = int(M["m10"] / M["m00"])
         y = int(M["m01"] / M["m00"])
