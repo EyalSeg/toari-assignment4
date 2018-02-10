@@ -3,22 +3,27 @@
 import rospy
 
 from tf import TransformListener
-
-from geometry_msgs.msg import PointStamped, PoseStamped
+from geometry_msgs.msg import PointStamped, PoseStamped, Quaternion
 
 class Poses:
     def __init__(self):
         self.tf_listener = TransformListener()
 
-        self.tf_listener.waitForTransform('base_footprint', 'kinect2_depth_optical_frame', rospy.Time(),
+        self.tf_listener.waitForTransform('base_footprint', '/kinect2_depth_optical_frame', rospy.Time(),
                                           rospy.Duration(5.0))
 
         self.tf_listener.waitForTransform('/base_link', '/map', rospy.Time(),
                                           rospy.Duration(5.0))
 
+        self.tf_listener.waitForTransform('/kinect2_depth_optical_frame', '/map', rospy.Time(),
+                                          rospy.Duration(5.0))
+
     def transform_point(self, point_stamped, target_frame):
         if point_stamped.header.frame_id == target_frame:
             return point_stamped
+
+
+        self.tf_listener.waitForTransform(point_stamped.header.frame_id, target_frame, rospy.Time(0), rospy.Duration(5))
 
         try:
             self.tf_listener.waitForTransform(target_frame, point_stamped.header.frame_id, point_stamped.header.stamp,
@@ -40,3 +45,5 @@ class Poses:
         pose.header.stamp = time
 
         return pose
+
+
