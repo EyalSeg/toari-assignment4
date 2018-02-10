@@ -20,10 +20,12 @@ class Movement:
         self.poses = poses_service
 
     def move(self, coordinate=None, orientation=None, desired_pose=None):
-        """ moves to the target destination.
-        pass either coordinate & orientation or a desired_pose that contains both
-        coordinate: an array containing [x, y]
-        orientation: an array representing a quaternion
+        """
+         moves to the target destination. Note that either a pose or an orientation + coordinate must be provided!
+        :param coordinate: an array containing [x, y] relative to the map, to move to
+        :param orientation: orientation: an array representing a quaternion
+        :param desired_pose: the pose to move to
+        :return:
         """
 
         if desired_pose is None:
@@ -38,7 +40,13 @@ class Movement:
         return promise
 
 
-    def get_coordinate_near(self, coordinate, offset):
+    def get_pose_near(self, coordinate, offset):
+        """ gets a pose(location + orientation) close to given coordinate
+
+        :param coordinate: an array containing [x, y] relative to the map, to move next to
+        :param offset: the distance from the point the goal should be
+        :return: a PoseStamped representing the pose which is offset away from the given coordinate
+        """
         current_pose = self.poses.get_current_pose()
         current_position = Movement.position2nparray(current_pose.pose.position)
 
