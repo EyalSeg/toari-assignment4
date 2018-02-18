@@ -26,7 +26,7 @@ class Controller:
         self.object_detector = ObjectDetector("/object_detection/coordinates")
         self.find_red_object = self.object_detector.find_red_object
 
-        self.arm = Arm()
+        # self.arm = Arm()
 
         print("I'm up")
 
@@ -40,7 +40,10 @@ class Controller:
     def move_to_object(self, location_stamped):
         loc = self.poses.transform_point(location_stamped, '/map')
         coordinate = [loc.point.x, loc.point.y]
-        goal = self.movement.get_coordinate_near(coordinate, 0.5)
+        goal = self.movement.get_pose_near(coordinate, 0.5)
+
+        print "moving to "
+        print goal
 
         return self.movement.move(desired_pose=goal)
 
@@ -61,15 +64,21 @@ if __name__ == '__main__':
     try:
         controller = Controller()
 
+        controller.find_red_object() \
+                .then(lambda location_stamped: controller.move_to_object(location_stamped))\
+                .then(lambda result: controller.finished_moving())
+
+        # controller.movement.move_to
         # controller.find_red_object()\
-        #     .then(lambda location_stamped: controller.move_arm(location_stamped))
+        #     .then(lambda location_stamped: controller.movement.move_to_object(location_stamped))\
+        #     .then(lambda result: controller.finished_moving())
+
         #an aync navigation example. PROMISES ARE KEWL
         # controller.movement.move([0.9, -1.8], [0, 0, -0.7, 0.7])\
         #     .then(controller.move([-2.6, -3.2], [0, 0, 1, 0.01]))\
         #     .then(controller.move([-8.7, -1.5], [0, 0, 0.3, 0.9]))\
-        controller.find_red_object()\
-            .then(lambda result: controller.move_to_object(result))\
-            .then(lambda result: controller.finished_moving())
+        # controller.find_red_object()\
+        #     .then(lambda result: controller.move_to_object(result))\
 
         rospy.spin()
     except rospy.ROSInterruptException:
