@@ -165,8 +165,8 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(pick_node src/pick.cpp)
-target_link_libraries(pick_node ${catkin_LIBRARIES})
+#add_executable(pick src/pick.cpp)
+#target_link_libraries(pick ${catkin_LIBRARIES})
 
 
 #############
