@@ -100,21 +100,7 @@ if __name__ == '__main__':
         controller.move_elevator2home()
 
 
-        # controller.find_red_object() \
-        #         .then(lambda location_stamped: controller.move_to_object(location_stamped))\
-        #         .then(lambda result: controller.finished_moving())
-
-        # controller.movement.move_to
-        # controller.find_red_object()\
-        #     .then(lambda location_stamped: controller.movement.move_to_object(location_stamped))\
-        #     .then(lambda result: controller.finished_moving())
-
-        #an aync navigation example. PROMISES ARE KEWL
-        # controller.movement.move([0.9, -1.8], [0, 0, -0.7, 0.7])\
-        #     .then(controller.move([-2.6, -3.2], [0, 0, 1, 0.01]))\
-        #     .then(controller.move([-8.7, -1.5], [0, 0, 0.3, 0.9]))\
-        # controller.find_red_object()\
-        #     .then(lambda result: controller.move_to_object(result))\
+        # controller.find_red_object()
 
         rospy.spin()
     except rospy.ROSInterruptException:
