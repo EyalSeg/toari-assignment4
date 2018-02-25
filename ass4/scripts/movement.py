@@ -5,10 +5,6 @@ from std_msgs.msg import Header
 
 import tf.transformations as transformations
 
-
-from promise import Promise
-from poses import Poses
-
 import numpy
 import math
 
@@ -27,17 +23,16 @@ class Movement:
         :param desired_pose: the pose to move to
         :return:
         """
-
         if desired_pose is None:
             desired_pose = self.coord_to_position(coordinate, orientation)
 
         destination = MoveBaseGoal()
         destination.target_pose = desired_pose
 
-        promise = Promise()
+        self.nav_server.send_goal(destination)
+        self.nav_server.wait_for_result()
 
-        self.nav_server.send_goal(destination, done_cb=lambda state, result: promise.do_resolve(True))
-        return promise
+        return self.nav_server.get_result()
 
 
     def get_pose_near(self, coordinate, offset):
