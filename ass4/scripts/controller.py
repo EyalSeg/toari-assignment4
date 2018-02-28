@@ -9,7 +9,8 @@ from movement import Movement
 from objectDetector import ObjectDetector
 from arm import Arm
 from poses import Poses
-
+import std_srvs.srv
+global controller
 
 class Controller:
     def __init__(self):
@@ -26,7 +27,7 @@ class Controller:
         self.object_detector = ObjectDetector("/object_detection/coordinates")
         self.find_red_object = self.object_detector.find_red_object
 
-        # self.arm = Arm()
+        self.arm = Arm()
 
         print("I'm up")
 
@@ -54,11 +55,9 @@ class Controller:
         return True
 
     def move_arm(self, target):
-        print 1
-        target = self.poses.transform_point(target, 'base_footprint')
-
-        print target
-        self.arm.set_pose(target.point)
+        print("Moving Arm ...?")
+        #target = self.poses.transform_point(target, 'base_footprint')                
+        self.arm.set_pose(target)
 
     def move_home2elevator(self):
         self.move([0.410733197542, -0.376687458057, 0.0], [0,0, 0.855162922773, 0.518359311206])
@@ -92,16 +91,63 @@ class Controller:
         rospy.loginfo('goal reached: desk ')
 
 
+    def look_down(self, toggle_on=True):
+        rospy.wait_for_service('/look_down')
+        try:
+            look = rospy.ServiceProxy('/look_down', std_srvs.srv.SetBool)
+            look(toggle_on)            
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+
+    def pick(self):
+        rospy.wait_for_service('/pick_go')
+        try:
+            p = rospy.ServiceProxy('/pick_go', std_srvs.srv.Trigger)
+            print("attempting picking")
+            p()
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+            
+def menu():
+    global controller
+    menu_str = r"""Menu:
+1) Navigate to Point
+2) Move Arm
+3) Look Up
+4) Look Down
+5) Pick
+6) ipdb
+Coose Action:
+"""
+    while(True):
+        choice = input(menu_str)
+        if choice == 1:
+            point = input("Enter Coordinates: ")
+            controller.move(list(point[:2]) + [0.], [0, 0, 0, 1.])
+        elif choice == 2:
+            point = input("Enter Coordinates: ")
+            controller.move_arm(point) # (0.4, 0, 0.5) seems like a good one
+        elif choice == 3:            
+            controller.look_down(False)
+        elif choice == 4:
+            controller.look_down(True)
+        elif choice == 5:
+            controller.pick()
+        elif choice == 6:
+            import ipdb; ipdb.set_trace()
+        elif choice == -1:
+            return
+            
 if __name__ == '__main__':
     try:
         controller = Controller()
-
+        menu()
         #controller.move_home2elevator()
-        controller.move_elevator2home()
+        # controller.move_elevator2home()
 
 
         # controller.find_red_object()
 
-        rospy.spin()
+        # rospy.spin()
     except rospy.ROSInterruptException:
         pass
