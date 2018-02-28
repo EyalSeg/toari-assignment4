@@ -13,10 +13,12 @@
 
     <arg name="start_position" default="pre_grasp3" />
     <arg name="grasp_offset" default="-0.04" />
+    <arg name="retreat_desired_distance" default="0.2" />
     <arg name="max_contact_force" default="1.0" />
     <node name="pick_node" pkg="ass4" type="pick_node" output="screen" required="true">
       <param name="~start_position_name" value="$(arg start_position)"/>
       <param name="~grasp_offset" value="$(arg grasp_offset)"/>
+      <param name="~retreat_desired_distance" value="$(arg retreat_desired_distance)"/>
       <param name="~max_contact_force" value="$(arg max_contact_force)"/>
       <param name="~object_name" value="can"/>
     </node>

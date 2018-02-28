@@ -17,6 +17,7 @@
 #include <std_srvs/SetBool.h>
 #include <moveit_msgs/PickupAction.h>
 #include <moveit_msgs/PlaceAction.h>
+
 #define TRUE -1
 #define FALSE 0
 #define MAX_BOARD_PLACE 0.05
@@ -43,6 +44,8 @@ moveit_msgs::PlaceGoal buildPlaceGoal(const std::string &objectName);
 
 bool pickCallBack(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 
+bool lookCallBack(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
+
 double randBetweenTwoNum(int max, int min);
 
 bool exec = false;
@@ -67,6 +70,7 @@ int main(int argc, char **argv) {
     pn.param<std::string>("table_name", table_name, "table");
 
     ros::ServiceServer pick = n.advertiseService("pick_go", &pickCallBack);
+    ros::ServiceServer look = n.advertiseService("look_down", &lookCallBack);
     ROS_INFO("H9ello");
     moveit::planning_interface::MoveGroup group("arm");
     //Config move group
@@ -155,6 +159,14 @@ moveit_msgs::PlaceGoal buildPlaceGoal(const std::string &objectName) {
 
 moveit_msgs::PickupGoal BuildPickGoal(const std::string &objectName) {
     moveit_msgs::PickupGoal goal;
+    ros::NodeHandle pn("~");
+    ros::NodeHandle n;
+    float grasp_offset;
+    float retreat_desired_distance;
+    float max_contact_force;
+    pn.param<float>("grasp_offset", grasp_offset, -0.04);
+    pn.param<float>("retreat_desired_distance", retreat_desired_distance, 0.2);
+    pn.param<float>("max_contact_force", max_contact_force, 1.0);
     goal.target_name = objectName;
     goal.group_name = "arm";
     goal.end_effector = "eef";
@@ -168,9 +180,9 @@ moveit_msgs::PickupGoal BuildPickGoal(const std::string &objectName) {
 
     goal.minimize_object_distance = true;
     moveit_msgs::Grasp g;
-    g.max_contact_force = 1.00; //0.01
+    g.max_contact_force = max_contact_force; //1.00; //0.01
     g.grasp_pose.header.frame_id = goal.target_name;
-    g.grasp_pose.pose.position.x = -0.04;
+    g.grasp_pose.pose.position.x = grasp_offset;//-0.04;
     g.grasp_pose.pose.position.y = 0.0;
     g.grasp_pose.pose.position.z = 0.0;
     g.grasp_pose.pose.orientation.x = 0.0;
@@ -186,7 +198,7 @@ moveit_msgs::PickupGoal BuildPickGoal(const std::string &objectName) {
     g.post_grasp_retreat.direction.header.frame_id = "/base_footprint"; //gripper_link
     g.post_grasp_retreat.direction.vector.z = 1.0;
     g.post_grasp_retreat.min_distance = 0.1;
-    g.post_grasp_retreat.desired_distance = 0.2;
+    g.post_grasp_retreat.desired_distance = retreat_desired_distance;//0.2;
 
     g.pre_grasp_posture.joint_names.push_back("left_finger_joint");
     g.pre_grasp_posture.joint_names.push_back("right_finger_joint");
@@ -220,7 +232,7 @@ void look_down(int status) {
     }
     else{
       q_goal[0]=0.0;
-      q_goal[1]=0.6;
+      q_goal[1]=0.0;
     }
     traj.points[0].positions=q_goal;
     traj.points[0].velocities.push_back(0);
@@ -265,6 +277,8 @@ bool pickCallBack(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &
 
     moveit_msgs::PickupGoal pickGoal = BuildPickGoal(object_name);
     actionlib::SimpleClientGoalState pickStatus = pickClient.sendGoalAndWait(pickGoal);
+    res.success = (pickStatus == actionlib::SimpleClientGoalState::SUCCEEDED);
+    res.message = pickStatus.getText();
 /* 
    if(pickStatus != actionlib::SimpleClientGoalState::SUCCEEDED) {
         res.success = (unsigned char) false;
@@ -298,8 +312,11 @@ bool pickCallBack(std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &
 
 }
 
-
-
+bool lookCallBack(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res) {
+    ros::NodeHandle pn("~");
+    ros::NodeHandle n;
+    look_down( (int) req.data);
+}
 
 double randBetweenTwoNum(int max, int min) {
     int randomNum = rand()%(max-min + 1) + min;
