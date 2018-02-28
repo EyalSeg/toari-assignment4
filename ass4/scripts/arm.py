@@ -10,28 +10,18 @@ class Arm:
         self.group = Arm.get_group()
         self.robot = moveit_commander.RobotCommander()
 
-    def set_pose(self, point_stamped, orientation = None):
-        print 'got here'
+    def set_pose(self, point, orientation = None):
         group = self.group
         target_pose = Pose()
-
         if orientation is not None:
             target_pose.orientation = orientation
         else:
             target_pose.orientation.w = 1.
-
-        target_pose.position = point_stamped
-        try:
-            group.set_pose_target(target_pose)
-        except Exception as e:
-            print e
-        print 'planning'
-
-        # plan = group.plan()
-        # group.go()
-        return Promise.resolve(group.plan())\
-            .then(Promise.resolve(group.go(wait=True)))
-
+        target_pose.position = Point(*point)
+        group.set_pose_target(target_pose)
+        plan1 = group.plan()
+        group.go(wait=True)
+            
     @staticmethod
     def get_group():
         group = moveit_commander.MoveGroupCommander("arm")
