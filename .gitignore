@@ -1,2 +1,5 @@
 
 ass4/\.idea/workspace\.xml
+*.pyc
+*~
+
